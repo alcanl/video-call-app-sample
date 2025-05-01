@@ -1,18 +1,17 @@
 package com.alcanl.app.chat.server.webcam;
 
+import com.alcanl.app.chat.connection.ConnectionHandler;
 import com.alcanl.app.chat.server.Server;
 import com.alcanl.app.chat.server.ServerBuilder;
 import com.alcanl.app.global.ImageDisplayPanel;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.modules.webcam.IWebcamReceiverIBuilder;
-import com.karandev.util.console.Console;
+import com.karandev.io.util.console.Console;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import static com.alcanl.app.chat.connection.ConnectionHandler.serverImageReceiver;
 
 public class ServerWebcamReceiver extends Server {
     private DataInputStream dataInputStream;
@@ -21,11 +20,12 @@ public class ServerWebcamReceiver extends Server {
     {
         this.serverSocket = serverSocket;
         this.clientSocket = clientSocket;
+        connectionHandler = new ConnectionHandler();
     }
     @Override
     protected void connect()
     {
-        serverImageReceiver(serverSocket, clientSocket, imageDisplayPanel, dataInputStream);
+         connectionHandler.serverImageReceiver(serverSocket, clientSocket, imageDisplayPanel, dataInputStream);
     }
     @Override
     public void run()

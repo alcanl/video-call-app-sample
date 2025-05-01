@@ -2,24 +2,23 @@ package com.alcanl.app.chat.client.console;
 
 import com.alcanl.app.chat.client.Client;
 import com.alcanl.app.chat.client.ClientBuilder;
+import com.alcanl.app.chat.connection.ConnectionHandler;
 import com.alcanl.app.modules.console.IConsoleSenderBuilder;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
-import static com.alcanl.app.chat.connection.ConnectionHandler.clientMessageSender;
 
 public class ClientConsoleSender extends Client {
     private PrintWriter printWriter;
-    private static final Scanner kb = new Scanner(System.in);
     private ClientConsoleSender(Socket clientSocket)
     {
         this.clientSocket = clientSocket;
+        connectionHandler = new ConnectionHandler();
     }
     @Override
     public void connect()
     {
-        clientMessageSender(clientSocket, printWriter, kb, connector);
+        connectionHandler.clientMessageSender(clientSocket, printWriter, connector);
     }
     @Override
     public void run()

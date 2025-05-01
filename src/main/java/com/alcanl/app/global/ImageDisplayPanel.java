@@ -10,22 +10,21 @@ public class ImageDisplayPanel extends JPanel
     private BufferedImage background;
     public ImageDisplayPanel () throws HeadlessException
     {
-        this.setDoubleBuffered(true); //to avoid flicker
+        this.setDoubleBuffered(true);
     }
     public void setBackground (Image newBackground)
     {
         synchronized (BACKGROUND_LOCK)
         {
             if (background == null)
-            {
                 background = new BufferedImage(newBackground.getWidth(null), newBackground.getHeight(null), BufferedImage.TYPE_INT_RGB);
-            }
+
             else if (background.getWidth() != newBackground.getWidth(null) || background.getHeight() != newBackground.getHeight(null))
             {
                 background.flush();
                 background = new BufferedImage(newBackground.getWidth(null), newBackground.getHeight(null), BufferedImage.TYPE_INT_RGB);
             }
-            Graphics graphics = background.createGraphics();
+            var graphics = background.createGraphics();
             graphics.drawImage(newBackground, 0, 0, null);
         }
         repaint();

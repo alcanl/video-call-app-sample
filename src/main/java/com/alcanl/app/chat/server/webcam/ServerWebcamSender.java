@@ -1,5 +1,6 @@
 package com.alcanl.app.chat.server.webcam;
 
+import com.alcanl.app.chat.connection.ConnectionHandler;
 import com.alcanl.app.chat.server.Server;
 import com.alcanl.app.chat.server.ServerBuilder;
 import com.alcanl.app.modules.webcam.IWebcamSenderIBuilder;
@@ -9,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import static com.alcanl.app.chat.connection.ConnectionHandler.serverImageSender;
 
 public class ServerWebcamSender extends Server {
     public static final int PORT = 19430;
@@ -20,11 +20,12 @@ public class ServerWebcamSender extends Server {
     {
         this.serverSocket = serverSocket;
         this.clientSocket = clientSocket;
+        connectionHandler = new ConnectionHandler();
     }
     @Override
     protected void connect()
     {
-        serverImageSender(serverSocket, clientSocket, webcam, dataOutputStream);
+        connectionHandler.serverImageSender(serverSocket, clientSocket, webcam, dataOutputStream);
     }
 
     @Override

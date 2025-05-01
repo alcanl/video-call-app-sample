@@ -3,23 +3,26 @@ package com.alcanl.app.chat;
 import com.alcanl.app.chat.client.console.ClientConsoleSender;
 import com.alcanl.app.chat.client.console.ClientConsoleReceiver;
 import com.alcanl.app.chat.client.webcam.ClientWebcamReceiver;
-import com.alcanl.app.chat.client.webcam.ClientWebcamSender;
 import com.alcanl.app.chat.server.Server;
 import com.alcanl.app.chat.server.console.ServerConsoleReceiver;
 import com.alcanl.app.chat.server.console.ServerConsoleSender;
-import com.alcanl.app.chat.server.webcam.ServerWebcamReceiver;
 import com.alcanl.app.chat.server.webcam.ServerWebcamSender;
 import com.alcanl.app.global.ImageDisplayPanel;
 import com.github.sarxos.webcam.Webcam;
-import com.karandev.util.console.Console;
+import com.karandev.io.util.console.Console;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Application {
+
+    private Application() {}
+
     public static void run()
     {
-        Console.writeLine("""
+        Logger.getAnonymousLogger().log(Level.INFO, """
                 Welcome to ConsoleChatApp
                 Please select your joiner type:
                 Server[S]/Joiner[J]
@@ -34,7 +37,8 @@ public class Application {
 
             else if (command.equalsIgnoreCase("S")) {
                 try {
-                    if (Console.readLine("For Console press 'C', for Webcam press 'W'").equalsIgnoreCase("C"))
+                    Logger.getAnonymousLogger().log(Level.INFO, "For Console press 'C', for Webcam press 'W'");
+                    if (Console.readLine().equalsIgnoreCase("C"))
                         createChatServer();
                     else
                         createWebcamServer();
@@ -42,14 +46,15 @@ public class Application {
                 }
                 catch (IOException ex)
                 {
-                    Console.writeLine(ex.getMessage());
+                    Logger.getAnonymousLogger().log(Level.WARNING, ex.getMessage());
                 }
             }
 
             else if (command.equalsIgnoreCase("J"))
             {
                 try {
-                    if (Console.readLine("To join for a console room press 'C', for a webcam room press 'W'").equalsIgnoreCase("C"))
+                    Logger.getAnonymousLogger().log(Level.WARNING, "To join for a console room press 'C', for a webcam room press 'W'");
+                    if (Console.readLine().equalsIgnoreCase("C"))
                         joinChatServer();
                     else
                         joinWebcamServer();
@@ -57,11 +62,11 @@ public class Application {
                 }
                 catch (IOException ex)
                 {
-                    Console.writeLine(ex.getMessage());
+                    Logger.getAnonymousLogger().log(Level.WARNING, ex.getMessage());
                 }
             }
             else
-                Console.writeLine("Invalid command!");
+                Logger.getAnonymousLogger().log(Level.INFO,"Invalid command!");
             }
         }
     private static void createChatServer() throws IOException
@@ -72,15 +77,11 @@ public class Application {
         var serverReceiver =  new ServerConsoleReceiver.ConsoleReceiverBuilder(serverSocket, clientSocket)
                 .setBufferedReader(clientSocket).create();
 
-        var serverSender = new ServerConsoleSender.Builder( serverSocket, clientSocket)
+        var serverSender = new ServerConsoleSender.Builder(serverSocket, clientSocket)
                 .setPrintWriter(clientSocket).setConnector("SERVER").create();
-
-
 
         serverSender.start();
         serverReceiver.start();
-
-
     }
     private static void createWebcamServer() throws IOException
     {
@@ -90,10 +91,10 @@ public class Application {
         var serverWebcamSender = new ServerWebcamSender.Builder(serverSocket, clientSocket)
                 .setWebcam(Webcam.getDefault()).setDataOutputStream(clientSocket).create();
 
-        var serverWebcamReceiver = new ServerWebcamReceiver.Builder(serverSocket, clientSocket)
-                .setDataInputStream(clientSocket).setImageDisplayPanel(new ImageDisplayPanel()).create();
+        /*var serverWebcamReceiver = new ServerWebcamReceiver.Builder(serverSocket, clientSocket)
+               .setDataInputStream(clientSocket).setImageDisplayPanel(new ImageDisplayPanel()).create();
 
-        serverWebcamReceiver.start();
+        serverWebcamReceiver.start();*/
         serverWebcamSender.start();
     }
     private static void joinWebcamServer()
@@ -104,31 +105,29 @@ public class Application {
             var clientWebcamReceiver = new ClientWebcamReceiver.Builder(clientSocketWebcam).setConnector("GUEST")
                     .setDataInputStream(clientSocketWebcam).setImageDisplayPanel(new ImageDisplayPanel()).create();
 
-            var clientWebcamSender = new ClientWebcamSender.Builder(clientSocketWebcam).setWebcam(Webcam.getDefault())
+            /*var clientWebcamSender = new ClientWebcamSender.Builder(clientSocketWebcam).setWebcam(Webcam.getDefault())
                     .setDataOutputStream(clientSocketWebcam).create();
 
-            clientWebcamSender.start();
+            clientWebcamSender.start(); */
             clientWebcamReceiver.start();
 
-            Console.writeLine("Connection establishing....\nConnection verified.");
+            Logger.getAnonymousLogger().log(Level.INFO,"Connection establishing....\nConnection verified.");
         }
         catch (IOException ex)
         {
-            Console.writeLine(ex.getMessage());
+            Logger.getAnonymousLogger().log(Level.WARNING, ex.getMessage());
         }
-
     }
 
     private static void help()
     {
-        Console.writeLine("With usage of 'S' command you can be a host for a chat room and invite your friends with your ip address and port number.");
-        Console.writeLine("With usage of 'J' command you can join a chat room with ip address and port number that the host created before ");
+        Logger.getAnonymousLogger().log(Level.INFO,"With usage of 'S' command you can be a host for a chat room and invite your friends with your ip address and port number.");
+        Logger.getAnonymousLogger().log(Level.INFO,"With usage of 'J' command you can join a chat room with ip address and port number that the host created before ");
     }
 
     private static void joinChatServer() throws IOException
     {
         var clientSocket = new Socket(Server.IP_ADDRESS, ServerConsoleSender.PORT);
-
 
         var clientSender = new ClientConsoleSender.Builder(clientSocket)
                 .setConnector("GUEST").setPrintWriter(clientSocket).create();
@@ -138,8 +137,6 @@ public class Application {
 
         clientReceiver.start();
         clientSender.start();
-        Console.writeLine("Connection establishing....\nConnection verified.");
-
+        Logger.getAnonymousLogger().log(Level.INFO,"Connection establishing....\nConnection verified.");
     }
-
 }

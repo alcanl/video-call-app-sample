@@ -1,5 +1,6 @@
 package com.alcanl.app.chat.server.console;
 
+import com.alcanl.app.chat.connection.ConnectionHandler;
 import com.alcanl.app.chat.server.Server;
 import com.alcanl.app.chat.server.ServerBuilder;
 import com.alcanl.app.modules.IBuilder;
@@ -10,7 +11,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import static com.alcanl.app.chat.connection.ConnectionHandler.serverMessageReceiver;
 
 public class ServerConsoleReceiver extends Server {
     private BufferedReader bufferedReader;
@@ -19,11 +19,12 @@ public class ServerConsoleReceiver extends Server {
     {
         this.serverSocket = serverSocket;
         this.clientSocket = clientSocket;
+        connectionHandler = new ConnectionHandler();
     }
     @Override
     protected void connect()
     {
-        serverMessageReceiver(serverSocket, clientSocket, bufferedReader);
+        connectionHandler.serverMessageReceiver(serverSocket, clientSocket, bufferedReader);
     }
     @Override
     public void run()
